@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APT41 Detection Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111927;
+  --bg-card: #151f2e;
+  --bg-card-hover: #1a2a3d;
+  --border-color: rgba(56, 132, 255, 0.12);
+  --border-glow: rgba(56, 132, 255, 0.2);
+  --text-primary: #e8edf5;
+  --text-secondary: #8899aa;
+  --text-muted: #5a6f84;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-purple: #8b5cf6;
+  --accent-red: #ef4444;
+  --accent-green: #22c55e;
+  --accent-orange: #f59e0b;
+  --shadow-glow: 0 8px 32px rgba(59, 130, 246, 0.08);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg-primary);
+  background-image: 
+    radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(6, 182, 212, 0.03) 0%, transparent 50%);
+  min-height: 100vh;
+  color: var(--text-primary);
+  font-family: var(--font);
+  padding: 24px;
+  line-height: 1.6;
+}
+
+.dash {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* ─── HEADER ─── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 28px;
+  margin-bottom: 28px;
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glow);
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), var(--accent-purple), transparent);
+  opacity: 0.6;
+}
+.header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+  border: 0.5px solid rgba(239, 68, 68, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.header-icon i { font-size: 24px; color: #ef4444; }
+.header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #e8edf5 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+.header p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* ─── STATS ROW ─── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  text-align: center;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+.stat-card:nth-child(1)::after { background: linear-gradient(90deg, #ef4444, #f87171); }
+.stat-card:nth-child(2)::after { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.stat-card:nth-child(3)::after { background: linear-gradient(90deg, #22c55e, #4ade80); }
+.stat-card:nth-child(4)::after { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.stat-num {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ─── KILL CHAIN ─── */
+.kill-chain {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+.kc-step {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.kc-node {
+  font-size: 10px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--transition);
+  border: 0.5px solid transparent;
+  color: var(--text-muted);
+  background: transparent;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.kc-node:hover {
+  color: var(--text-primary);
+  background: rgba(59, 130, 246, 0.06);
+}
+.kc-node.active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.15));
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.08);
+}
+.kc-node.visited {
+  color: var(--text-secondary);
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.1);
+}
+.kc-arrow {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 0 6px;
+  flex-shrink: 0;
+  opacity: 0.4;
+}
+
+/* ─── PROGRESS ─── */
+.progress-bar {
+  height: 3px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 4px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  border: 0.5px solid var(--border-color);
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+/* ─── PHASE BUTTONS ─── */
+.phases-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.phase-btn {
+  font-size: 12px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+.phase-btn .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: var(--transition);
+}
+.phase-btn:hover {
+  border-color: rgba(59, 130, 246, 0.2);
+  color: var(--text-primary);
+  background: rgba(59, 130, 246, 0.04);
+}
+.phase-btn.active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.08));
+  border-color: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+.phase-btn.active .dot {
+  background: #3b82f6;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ─── CONTENT GRID ─── */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.full-width { grid-column: 1 / -1; }
+
+.card {
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  animation: fadeUp 0.3s ease;
+  transition: var(--transition);
+}
+.card:hover {
+  border-color: var(--border-glow);
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 0.5px solid rgba(255,255,255,0.04);
+}
+.card-icon i { font-size: 18px; }
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+.mitre-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.badge-mitre {
+  font-size: 10px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: rgba(59, 130, 246, 0.08);
+  color: #60a5fa;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  border: 0.5px solid rgba(59, 130, 246, 0.1);
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.event-ids {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.event-pill {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 0.5px solid rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.04);
+  font-family: var(--font-mono);
+}
+
+/* ─── QUERY TABS ─── */
+.queries-section { grid-column: 1 / -1; }
+.query-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.qtab {
+  font-size: 11px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  font-weight: 500;
+}
+.qtab:hover {
+  color: var(--text-primary);
+  border-color: rgba(59, 130, 246, 0.15);
+  background: rgba(59, 130, 246, 0.04);
+}
+.qtab.active {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+/* ─── SPL BOX ─── */
+.spl-box {
+  background: rgba(0,0,0,0.3);
+  border: 0.5px solid var(--border-color);
+  border-left: 3px solid #3b82f6;
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #b8c7d9;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.spl-box::before {
+  content: 'SPL';
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 8px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.3;
+}
+
+/* ─── BUTTONS ─── */
+.actions-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.copy-btn, .splunk-btn {
+  font-size: 12px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+  font-weight: 500;
+}
+.copy-btn:hover {
+  border-color: rgba(59, 130, 246, 0.2);
+  color: var(--text-primary);
+  background: rgba(59, 130, 246, 0.04);
+}
+.splunk-btn {
+  border-color: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+.splunk-btn:hover {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+.copy-btn.copied {
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.2);
+  background: rgba(34, 197, 94, 0.06);
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1024px) {
+  .content-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  body { padding: 16px; }
+  .header { flex-direction: column; text-align: center; padding: 16px 20px; }
+  .header h1 { font-size: 17px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .kill-chain { padding: 8px 12px; }
+  .kc-node { font-size: 9px; padding: 4px 10px; }
+}
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr; }
+  .card { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="dash">
+
+  <div class="header">
+    <div class="header-icon"><i class="ti ti-shield-exclamation" aria-hidden="true"></i></div>
+    <div>
+      <h1>APT41 Attack Simulation — Detection Dashboard</h1>
+      <p>MITRE ATT&CK kill chain · 28 SPL queries · 24 event IDs · Lab: 192.168.56.0/24</p>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" style="color:#ef4444;">11</div><div class="stat-label">ATT&CK Phases</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#3b82f6;">28</div><div class="stat-label">SPL Queries</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#22c55e;">24</div><div class="stat-label">Event IDs</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#f59e0b;">4</div><div class="stat-label">Lab Assets</div></div>
+  </div>
+
+  <div class="kill-chain" id="killchain"></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:9%"></div></div>
+
+  <div class="phases-wrap" id="phases"></div>
+  <div class="content-grid" id="content"></div>
+</div>
+
+<script>
+const phases = [
+  {
+    id:"initial", name:"Initial access", icon:"ti-door-enter", color:"rgba(239,68,68,0.08)", iconColor:"#ef4444",
+    mitre:["T1566.001","T1133","T1190"],
+    desc:"APT41 uses spearphishing with malicious macros, brute-force against RDP/VPN, and exploitation of public-facing applications for initial footholds.",
+    events:["4688","4104","4625","4624 Type10"],
+    queries:[
+      {label:"Hidden PowerShell execution", spl:`index=wineventlog EventCode=4688\n| search CommandLine="*-W Hidden*" OR CommandLine="*-Exec Bypass*" OR CommandLine="*DownloadString*" OR CommandLine="*IEX*"\n| table _time host NewProcessName CommandLine\n| sort - _time`},
+      {label:"RDP brute force (failed logons)", spl:`index=wineventlog EventCode=4625\n| stats count by IpAddress TargetUserName\n| where count > 5\n| sort - count\n| table IpAddress TargetUserName count`},
+      {label:"Successful RDP logon", spl:`index=wineventlog EventCode=4624\n| search LogonType=10\n| table _time host TargetUserName IpAddress LogonType\n| sort - _time`}
+    ]
+  },
+  {
+    id:"execution", name:"Execution", icon:"ti-terminal-2", color:"rgba(251,146,60,0.08)", iconColor:"#fb923c",
+    mitre:["T1059.001","T1059.003","T1047"],
+    desc:"APT41 uses PowerShell, cmd.exe, and WMI for execution — chaining them (Living-off-the-Land) to blend in with normal admin activity.",
+    events:["4688","4104","4103"],
+    queries:[
+      {label:"Encoded PowerShell command", spl:`index=wineventlog EventCode=4688\n| search CommandLine="*EncodedCommand*" OR CommandLine="*-enc *" OR CommandLine="*-ec *"\n| table _time host NewProcessName CommandLine\n| sort - _time`},
+      {label:"Script block logging — suspicious", spl:`index=powershell EventCode=4104\n| search ScriptBlockText="*Invoke-Expression*" OR ScriptBlockText="*IEX*" OR ScriptBlockText="*Net.WebClient*"\n| table _time host ScriptBlockText\n| sort - _time`},
+      {label:"WMI process execution", spl:`index=wineventlog EventCode=4688\n| search NewProcessName="*WmiPrvSE.exe*" OR ParentProcessName="*WmiPrvSE.exe*"\n| table _time host NewProcessName ParentProcessName CommandLine\n| sort - _time`},
+      {label:"cmd.exe spawned from PowerShell", spl:`index=wineventlog EventCode=4688\n| search NewProcessName="*cmd.exe*" ParentProcessName="*powershell.exe*"\n| table _time host NewProcessName ParentProcessName CommandLine\n| sort - _time`}
+    ]
+  },
+  {
+    id:"persistence", name:"Persistence", icon:"ti-anchor", color:"rgba(245,158,11,0.08)", iconColor:"#f59e0b",
+    mitre:["T1547.001","T1053.005","T1505.003"],
+    desc:"APT41 uses Registry Run Keys, scheduled tasks with hidden PowerShell, and web shells on internet-facing servers to maintain access after reboots.",
+    events:["4698","4702","Sysmon 13","Sysmon 11"],
+    queries:[
+      {label:"Scheduled task created", spl:`index=wineventlog EventCode=4698\n| table _time host TaskName TaskContent\n| sort - _time`},
+      {label:"Registry Run key modified (Sysmon)", spl:`index=sysmon EventCode=13\n| search TargetObject="*\\\\CurrentVersion\\\\Run*" OR TargetObject="*\\\\CurrentVersion\\\\RunOnce*"\n| table _time host Image TargetObject Details\n| sort - _time`},
+      {label:"Web shell dropped (Sysmon)", spl:`index=sysmon EventCode=11\n| search TargetFilename="*wwwroot*" AND (TargetFilename="*.aspx*" OR TargetFilename="*.php*" OR TargetFilename="*.jsp*")\n| table _time host Image TargetFilename\n| sort - _time`}
+    ]
+  },
+  {
+    id:"privesc", name:"Privilege escalation", icon:"ti-arrow-up-circle", color:"rgba(236,72,153,0.08)", iconColor:"#ec4899",
+    mitre:["T1055","T1078","T1134"],
+    desc:"APT41 uses process injection, token manipulation, and valid admin credentials to escalate to SYSTEM or Domain Admin on compromised machines.",
+    events:["4672","4673","4648","Sysmon 8"],
+    queries:[
+      {label:"Special privileges at logon", spl:`index=wineventlog EventCode=4672\n| table _time host SubjectUserName PrivilegeList\n| sort - _time`},
+      {label:"Process injection — CreateRemoteThread (Sysmon)", spl:`index=sysmon EventCode=8\n| table _time host SourceImage TargetImage StartAddress\n| sort - _time`},
+      {label:"Explicit credentials used", spl:`index=wineventlog EventCode=4648\n| table _time host SubjectUserName TargetUserName TargetServerName\n| sort - _time`}
+    ]
+  },
+  {
+    id:"evasion", name:"Defense evasion", icon:"ti-eye-off", color:"rgba(52,211,153,0.08)", iconColor:"#34d399",
+    mitre:["T1070.001","T1036","T1027","T1574.002"],
+    desc:"APT41 clears event logs, uses DLL sideloading, and obfuscates payloads. Log clearing (T1070.001) is a signature APT41 behavior — always check for Event ID 1102.",
+    events:["1102","104","4719","Sysmon 7"],
+    queries:[
+      {label:"Security log cleared — T1070.001", spl:`index=wineventlog EventCode=1102 OR EventCode=104\n| table _time host EventCode Message\n| sort - _time`},
+      {label:"Audit policy changed", spl:`index=wineventlog EventCode=4719\n| table _time host SubjectUserName CategoryId AuditPolicyChanges\n| sort - _time`},
+      {label:"Suspicious DLL loaded from temp (Sysmon)", spl:`index=sysmon EventCode=7\n| search ImageLoaded="*\\\\Temp\\\\*" OR ImageLoaded="*\\\\AppData\\\\*"\n| table _time host Image ImageLoaded Signed\n| sort - _time`}
+    ]
+  },
+  {
+    id:"credential", name:"Credential access", icon:"ti-key", color:"rgba(239,68,68,0.08)", iconColor:"#ef4444",
+    mitre:["T1003.001","T1558.003","T1110"],
+    desc:"APT41 dumps LSASS memory with Mimikatz-style tools, requests Kerberos service tickets for offline cracking (Kerberoasting), and brute-forces accounts.",
+    events:["4776","4768","4769","Sysmon 10"],
+    queries:[
+      {label:"LSASS access — Mimikatz (Sysmon)", spl:`index=sysmon EventCode=10\n| search TargetImage="*lsass.exe*"\n| table _time host SourceImage TargetImage GrantedAccess\n| sort - _time`},
+      {label:"Kerberoasting — RC4 ticket request", spl:`index=wineventlog EventCode=4769\n| search TicketEncryptionType=0x17\n| table _time host TargetUserName ServiceName ClientAddress TicketEncryptionType\n| sort - _time`},
+      {label:"NTLM auth failure (brute force)", spl:`index=wineventlog EventCode=4776\n| search Status!="0x0"\n| stats count by TargetUserName Workstation\n| sort - count\n| table TargetUserName Workstation count`}
+    ]
+  },
+  {
+    id:"discovery", name:"Discovery", icon:"ti-zoom-scan", color:"rgba(59,130,246,0.08)", iconColor:"#3b82f6",
+    mitre:["T1087.001","T1082","T1016","T1018"],
+    desc:"APT41 runs built-in Windows commands — whoami, ipconfig, net user, systeminfo, nltest — to map the environment before lateral movement.",
+    events:["4688","4798","4799"],
+    queries:[
+      {label:"Recon commands executed", spl:`index=wineventlog EventCode=4688\n| search NewProcessName="*net.exe*" OR NewProcessName="*whoami.exe*" OR NewProcessName="*ipconfig.exe*" OR NewProcessName="*systeminfo.exe*" OR NewProcessName="*nltest.exe*"\n| table _time host NewProcessName CommandLine\n| sort - _time`},
+      {label:"Group membership enumerated", spl:`index=wineventlog EventCode=4798 OR EventCode=4799\n| table _time host TargetUserName TargetDomainName SubjectUserName\n| sort - _time`},
+      {label:"AD enumeration via PowerShell", spl:`index=powershell EventCode=4104\n| search ScriptBlockText="*Get-ADUser*" OR ScriptBlockText="*Get-ADComputer*" OR ScriptBlockText="*Get-ADGroup*"\n| table _time host ScriptBlockText\n| sort - _time`}
+    ]
+  },
+  {
+    id:"lateral", name:"Lateral movement", icon:"ti-arrows-right-left", color:"rgba(139,92,246,0.08)", iconColor:"#8b5cf6",
+    mitre:["T1021.001","T1021.002","T1550.002"],
+    desc:"APT41 moves laterally via RDP, SMB admin shares, and Pass-the-Hash — reusing harvested NTLM hashes to authenticate without knowing plaintext passwords.",
+    events:["4624 Type3","4624 Type10","4648","Sysmon 3"],
+    queries:[
+      {label:"SMB lateral movement — network logon", spl:`index=wineventlog EventCode=4624\n| search LogonType=3\n| table _time host TargetUserName IpAddress WorkstationName\n| sort - _time`},
+      {label:"Pass-the-Hash — NTLM network logon", spl:`index=wineventlog EventCode=4624\n| search LogonType=3 AuthenticationPackageName=NTLM\n| table _time host TargetUserName IpAddress AuthenticationPackageName\n| sort - _time`},
+      {label:"Network connections to SMB/RDP (Sysmon)", spl:`index=sysmon EventCode=3\n| search DestinationPort=445 OR DestinationPort=3389\n| table _time host Image DestinationIp DestinationPort\n| sort - _time`}
+    ]
+  },
+  {
+    id:"collection", name:"Collection", icon:"ti-database", color:"rgba(245,158,11,0.08)", iconColor:"#f59e0b",
+    mitre:["T1005","T1074.001","T1056.001"],
+    desc:"APT41 collects files from local systems and network shares, stages data in temp directories, and uses keyloggers to capture credentials before exfiltration.",
+    events:["4663","Sysmon 11","4104"],
+    queries:[
+      {label:"Sensitive file access", spl:`index=wineventlog EventCode=4663\n| search ObjectName="*\\\\Documents\\\\*" OR ObjectName="*\\\\Desktop\\\\*"\n| table _time host SubjectUserName ObjectName AccessMask\n| sort - _time`},
+      {label:"Data staged in temp directory (Sysmon)", spl:`index=sysmon EventCode=11\n| search TargetFilename="*\\\\Temp\\\\*" OR TargetFilename="*\\\\AppData\\\\Local\\\\Temp\\\\*"\n| table _time host Image TargetFilename\n| sort - _time`},
+      {label:"PowerShell file collection", spl:`index=powershell EventCode=4104\n| search ScriptBlockText="*Get-ChildItem*" OR ScriptBlockText="*Copy-Item*" OR ScriptBlockText="*Compress-Archive*"\n| table _time host ScriptBlockText\n| sort - _time`}
+    ]
+  },
+  {
+    id:"c2", name:"Command & control", icon:"ti-antenna", color:"rgba(239,68,68,0.08)", iconColor:"#ef4444",
+    mitre:["T1071.001","T1105","T1573"],
+    desc:"APT41 uses HTTP/HTTPS C2 (often ShadowPad or Cobalt Strike), masquerading traffic as legitimate web browsing to blend in with normal network activity.",
+    events:["Sysmon 3","4688","5156"],
+    queries:[
+      {label:"Outbound C2 connections summary (Sysmon)", spl:`index=sysmon EventCode=3\n| search Initiated=true\n| stats count by Image DestinationIp DestinationPort\n| sort - count\n| table Image DestinationIp DestinationPort count`},
+      {label:"Tool downloaded via PowerShell", spl:`index=powershell EventCode=4104\n| search ScriptBlockText="*DownloadFile*" OR ScriptBlockText="*DownloadString*" OR ScriptBlockText="*WebClient*"\n| table _time host ScriptBlockText\n| sort - _time`},
+      {label:"Outbound firewall connections", spl:`index=wineventlog EventCode=5156\n| search Direction=Outbound\n| stats count by Application DestAddress DestPort\n| sort - count\n| table Application DestAddress DestPort count`}
+    ]
+  },
+  {
+    id:"exfil", name:"Exfiltration", icon:"ti-upload", color:"rgba(236,72,153,0.08)", iconColor:"#ec4899",
+    mitre:["T1041","T1048"],
+    desc:"APT41 exfiltrates compressed and encrypted archives over the established C2 channel, often using RAR or 7-Zip to reduce size and evade content inspection.",
+    events:["Sysmon 3","4688","5156"],
+    queries:[
+      {label:"Large outbound transfers (Sysmon)", spl:`index=sysmon EventCode=3\n| eval MB=round(BytesSent/1024/1024, 2)\n| where MB > 1\n| table _time host Image DestinationIp DestinationPort MB\n| sort - MB`},
+      {label:"Archive tool executed", spl:`index=wineventlog EventCode=4688\n| search NewProcessName="*rar.exe*" OR NewProcessName="*7z.exe*" OR CommandLine="*Compress-Archive*"\n| table _time host NewProcessName CommandLine\n| sort - _time`},
+      {label:"Exfil over alternative protocol", spl:`index=sysmon EventCode=3\n| search DestinationPort=21 OR DestinationPort=22 OR DestinationPort=53\n| table _time host Image DestinationIp DestinationPort\n| sort - _time`}
+    ]
+  }
+];
+
+let active = "initial";
+let activeQuery = 0;
+const visited = new Set(["initial"]);
+
+function renderKillChain() {
+  const el = document.getElementById("killchain");
+  el.innerHTML = phases.map((p, i) => `
+    <div class="kc-step">
+      <div class="kc-node ${p.id === active ? 'active' : visited.has(p.id) ? 'visited' : ''}" onclick="setActive('${p.id}')">${p.name}</div>
+      ${i < phases.length - 1 ? '<span class="kc-arrow">›</span>' : ''}
+    </div>
+  `).join("");
+}
+
+function renderProgress() {
+  const idx = phases.findIndex(p => p.id === active);
+  const pct = Math.round(((idx + 1) / phases.length) * 100);
+  document.getElementById("progress").style.width = pct + "%";
+}
+
+function renderPhases() {
+  const el = document.getElementById("phases");
+  el.innerHTML = phases.map(p => `
+    <button class="phase-btn ${p.id === active ? 'active' : ''}" onclick="setActive('${p.id}')">
+      <span class="dot"></span>${p.name}
+    </button>
+  `).join("");
+}
+
+function renderContent() {
+  const phase = phases.find(p => p.id === active);
+  const q = phase.queries[activeQuery];
+  document.getElementById("content").innerHTML = `
+    <div class="card">
+      <div class="card-top">
+        <div class="card-icon" style="background:${phase.color}">
+          <i class="ti ${phase.icon}" style="color:${phase.iconColor}" aria-hidden="true"></i>
+        </div>
+        <div>
+          <div class="card-title">${phase.name}</div>
+          <div class="mitre-badges">${phase.mitre.map(m => `<span class="badge-mitre">${m}</span>`).join("")}</div>
+        </div>
+      </div>
+      <p class="card-desc">${phase.desc}</p>
+      <div class="section-label">Event IDs</div>
+      <div class="event-ids">${phase.events.map(e => `<span class="event-pill">${e}</span>`).join("")}</div>
+    </div>
+
+    <div class="card">
+      <div class="section-label" style="margin-bottom:8px">Detection queries</div>
+      <div class="query-tabs">${phase.queries.map((q, i) => `
+        <button class="qtab ${i === activeQuery ? 'active' : ''}" onclick="setQuery(${i})">${q.label}</button>
+      `).join("")}</div>
+      <div class="spl-box">${q.spl}</div>
+      <div class="actions-row">
+        <button class="copy-btn" id="copybtn" onclick="copyQuery()">
+          <i class="ti ti-copy" aria-hidden="true"></i> Copy SPL
+        </button>
+        <button class="splunk-btn" onclick="copySplunk()">
+          <i class="ti ti-external-link" aria-hidden="true"></i> Open in Splunk
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function setActive(id) {
+  active = id;
+  activeQuery = 0;
+  visited.add(id);
+  renderAll();
+}
+
+function setQuery(i) {
+  activeQuery = i;
+  renderContent();
+}
+
+function copyQuery() {
+  const phase = phases.find(p => p.id === active);
+  navigator.clipboard.writeText(phase.queries[activeQuery].spl).then(() => {
+    const btn = document.getElementById("copybtn");
+    btn.classList.add("copied");
+    btn.innerHTML = '<i class="ti ti-check" aria-hidden="true"></i> Copied';
+    setTimeout(() => {
+      btn.classList.remove("copied");
+      btn.innerHTML = '<i class="ti ti-copy" aria-hidden="true"></i> Copy SPL';
+    }, 2000);
+  });
+}
+
+function copySplunk() {
+  const phase = phases.find(p => p.id === active);
+  const spl = encodeURIComponent(phase.queries[activeQuery].spl);
+  navigator.clipboard.writeText(`http://192.168.56.10:8000/en-US/app/search/search?q=search%20${spl}`);
+  const btns = document.querySelectorAll(".splunk-btn");
+  btns.forEach(b => { b.innerHTML = '<i class="ti ti-check" aria-hidden="true"></i> Link copied'; setTimeout(() => { b.innerHTML = '<i class="ti ti-external-link" aria-hidden="true"></i> Open in Splunk'; }, 2000); });
+}
+
+function renderAll() {
+  renderKillChain();
+  renderProgress();
+  renderPhases();
+  renderContent();
+}
+
+renderAll();
+</script>
+</body>
+</html>

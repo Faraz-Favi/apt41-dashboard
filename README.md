@@ -7,7 +7,7 @@
 
 > A comprehensive Splunk SPL dashboard for detecting APT41 (Winnti) threat actor activity across the entire MITRE ATT&CK kill chain.
 
-![Dashboard Preview](preview.png)
+LINK TO THE WEBSITE : https://faraz-favi.github.io/apt41-dashboard/
 
 ## 📋 Table of Contents
 

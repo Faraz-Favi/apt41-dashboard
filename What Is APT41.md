@@ -65,9 +65,3 @@ APT41 (also known as **Winnti**, **Barium**, or **Blackfly**) is a sophisticated
 | **Collection** | T1005, T1074.001, T1056.001 | File collection, data staging, keylogging |
 | **Command & Control** | T1071.001, T1105, T1573 | HTTP/HTTPS C2, tool downloads |
 | **Exfiltration** | T1041, T1048 | Data compression and exfiltration |
-
----
-index=wineventlog EventCode=4624
-| search LogonType=10
-| table _time host TargetUserName IpAddress LogonType
-| sort - _time

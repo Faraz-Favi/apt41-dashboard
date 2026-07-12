@@ -67,8 +67,6 @@ APT41 (also known as **Winnti**, **Barium**, or **Blackfly**) is a sophisticated
 | **Exfiltration** | T1041, T1048 | Data compression and exfiltration |
 
 ---
-
-# Successful RDP logon (suspicious)
 index=wineventlog EventCode=4624
 | search LogonType=10
 | table _time host TargetUserName IpAddress LogonType

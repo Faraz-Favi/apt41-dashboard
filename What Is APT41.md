@@ -1,40 +1,6 @@
-# 🛡️ APT41 Detection Dashboard — Complete Splunk SPL Guide
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Splunk Ready](https://img.shields.io/badge/Splunk-Ready-00a1de.svg)](https://www.splunk.com/)
-
-> **A complete Splunk SPL query collection for detecting APT41 (Winnti) threat actor activity across the entire MITRE ATT&CK kill chain**
-
----
-
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [Who is APT41?](#-who-is-apt41)
-- [MITRE ATT&CK Techniques Used by APT41](#-mitre-attck-techniques-used-by-apt41)
-- [Attack Lifecycle & Detection](#-attack-lifecycle--detection)
-  - [1. Initial Access](#1-initial-access)
-  - [2. Execution](#2-execution)
-  - [3. Persistence](#3-persistence)
-  - [4. Privilege Escalation](#4-privilege-escalation)
-  - [5. Defense Evasion](#5-defense-evasion)
-  - [6. Credential Access](#6-credential-access)
-  - [7. Discovery](#7-discovery)
-  - [8. Lateral Movement](#8-lateral-movement)
-  - [9. Collection](#9-collection)
-  - [10. Command & Control](#10-command--control)
-  - [11. Exfiltration](#11-exfiltration)
-- [Event IDs Reference](#-event-ids-reference)
-- [Quick Start](#-quick-start)
-- [Usage Tips](#-usage-tips)
-- [Customizing Queries for Your Environment](#-customizing-queries-for-your-environment)
-- [Creating Alerts in Splunk](#-creating-alerts-in-splunk)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Disclaimer](#-disclaimer)
-- [References](#-references)
-
----
 
 ## 🎯 Overview
 
@@ -101,31 +67,6 @@ APT41 (also known as **Winnti**, **Barium**, or **Blackfly**) is a sophisticated
 | **Exfiltration** | T1041, T1048 | Data compression and exfiltration |
 
 ---
-
-## 🔍 Attack Lifecycle & Detection
-
-### 1. Initial Access
-
-APT41 gains initial access through:
-- **Spearphishing attachments** (T1566.001): Malicious macros in Office documents
-- **External remote services** (T1133): Brute-force against RDP, VPN, and web applications
-- **Exploit public-facing apps** (T1190): Vulnerability exploitation (e.g., Exchange, Citrix)
-
-#### 🔎 Detection Queries
-
-```spl
-# Hidden PowerShell execution
-index=wineventlog EventCode=4688
-| search CommandLine="*-W Hidden*" OR CommandLine="*-Exec Bypass*" OR CommandLine="*DownloadString*" OR CommandLine="*IEX*"
-| table _time host NewProcessName CommandLine
-| sort - _time
-
-# RDP brute force detection (failed logons)
-index=wineventlog EventCode=4625
-| stats count by IpAddress TargetUserName
-| where count > 5
-| sort - count
-| table IpAddress TargetUserName count
 
 # Successful RDP logon (suspicious)
 index=wineventlog EventCode=4624

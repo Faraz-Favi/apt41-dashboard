@@ -17,7 +17,7 @@ APT41 (also known as **Winnti**, **Barium**, or **Blackfly**) is a sophisticated
 
 ---
 
-## 👤 Who is APT41?
+## 👤 What  is APT41? (Who Are They)
 
 APT41 (also known as **Winnti**, **Barium**, or **Blackfly**) is a sophisticated threat group widely attributed to China and active since at least 2012. They operate with a dual mission:
 
